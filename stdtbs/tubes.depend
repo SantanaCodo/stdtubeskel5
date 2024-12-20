@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1733846460 source:d:\1. c++\strukdat\tubes\main.cpp
+	"adt.h"
+
+1733846447 d:\1. c++\strukdat\tubes\adt.h
+	<iostream>
+	<string>
+
+1733846461 source:d:\1. c++\strukdat\tubes\adt.cpp
+	"adt.h"
+
+1734003291 source:d:\1. c++\strukdat\tubes - copy\main.cpp
+	"adt.h"
+
+1734003291 d:\1. c++\strukdat\tubes - copy\adt.h
+	<iostream>
+	<string>
+
