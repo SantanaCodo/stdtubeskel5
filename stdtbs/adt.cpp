@@ -1,13 +1,11 @@
-// adt.cpp
 #include "adt.h"
 
-// Membuat List kosong
 void createList(List &L) {
     L.first = nullptr;
     L.last = nullptr;
 }
 
-// Mengalokasikan node baru
+
 address allocate(infotype data) {
     address P = new elmlist;
     P->info = data;
@@ -16,53 +14,53 @@ address allocate(infotype data) {
     return P;
 }
 
-// Menyisipkan node setelah cursor
+
 void insertNode(List &L, address &cursor, address P) {
-    if (L.first == nullptr) { // List kosong
+    if (L.first == nullptr) { 
         L.first = P;
         L.last = P;
-    } else if (cursor == nullptr) { // Cursor belum valid, insert di awal
+    } else if (cursor == nullptr) { 
         P->next = L.first;
         L.first->prev = P;
         L.first = P;
-    } else { // Insert setelah cursor
+    } else { 
         P->next = cursor->next;
         P->prev = cursor;
         if (cursor->next != nullptr) {
             cursor->next->prev = P;
-        } else { // Cursor di akhir list
+        } else { 
             L.last = P;
         }
         cursor->next = P;
     }
-    cursor = P; // Pindahkan cursor ke node yang baru
+    cursor = P; 
 }
 
 // Menghapus node yang berada di posisi P
 void deleteNode(List &L, address &cursor, address P) {
     if (P != nullptr) {
-        if (P == L.first && P == L.last) { // List hanya satu elemen
+        if (P == L.first && P == L.last) { 
             L.first = nullptr;
             L.last = nullptr;
             cursor = nullptr;
-        } else if (P == L.first) { // Hapus node pertama
+        } else if (P == L.first) { 
             L.first = P->next;
             L.first->prev = nullptr;
             cursor = L.first;
-        } else if (P == L.last) { // Hapus node terakhir
+        } else if (P == L.last) { 
             L.last = P->prev;
             L.last->next = nullptr;
-            cursor = P->prev; // Pindahkan cursor ke node sebelumnya
-        } else { // Hapus node di tengah
+            cursor = P->prev; 
+        } else { 
             P->prev->next = P->next;
             P->next->prev = P->prev;
-            cursor = P->prev; // Pindahkan cursor ke node sebelumnya
+            cursor = P->prev; 
         }
         delete P;
     }
 }
 
-// Mencari node berdasarkan data
+
 address findNode(List L, infotype data) {
     address P = L.first;
     while (P != nullptr) {
@@ -74,7 +72,6 @@ address findNode(List L, infotype data) {
     return nullptr;
 }
 
-// Menampilkan isi List dan posisi cursor
 void show(List L, address cursor) {
     address P = L.first;
     cout << "Isi teks: ";
@@ -89,36 +86,30 @@ void show(List L, address cursor) {
     cout << endl;
 }
 
-// Memindahkan cursor ke kiri
 void MoveLeft(List L, address &cursor) {
     if (cursor != nullptr && cursor->prev != nullptr) {
         cursor = cursor->prev;
     }
 }
 
-// Memindahkan cursor ke kanan
 void MoveRight(List L, address &cursor) {
     if (cursor != nullptr && cursor->next != nullptr) {
         cursor = cursor->next;
     }
 }
 
-// Membuat Stack kosong
 void createStack(Stack &S) {
     S.top = -1;
 }
 
-// Memeriksa apakah Stack kosong
 bool isStackEmpty(Stack S) {
     return S.top == -1;
 }
 
-// Memeriksa apakah Stack penuh
 bool isStackFull(Stack S) {
     return S.top == MAX_SIZE - 1;
 }
 
-// Push data ke Stack
 void push(Stack &S, Action data) {
     if (!isStackFull(S)) {
         S.top++;
@@ -126,7 +117,6 @@ void push(Stack &S, Action data) {
     }
 }
 
-// Pop data dari Stack
 bool pop(Stack &S, Action &data) {
     if (!isStackEmpty(S)) {
         data = S.elements[S.top];
@@ -136,18 +126,15 @@ bool pop(Stack &S, Action &data) {
     return false;
 }
 
-// Menambahkan karakter setelah cursor dan merekam aksi
 void insertChar(List &L, address &cursor, infotype word, Stack &undoStack, Stack &redoStack) {
     address P = allocate(word);
     insertNode(L, cursor, P);
 
-    // Mencatat aksi insert
     Action act;
     act.type = "insert";
     act.word = word;
     push(undoStack, act);
 
-    // Bersihkan redoStack setelah aksi baru
     while (!isStackEmpty(redoStack)) {
         Action temp;
         pop(redoStack, temp);
@@ -155,7 +142,6 @@ void insertChar(List &L, address &cursor, infotype word, Stack &undoStack, Stack
     cout << "Kata \"" << word << "\" berhasil dimasukkan setelah cursor." << endl;
 }
 
-// Menghapus karakter di posisi cursor dan merekam aksi
 bool deleteChar(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
     if (cursor != nullptr) {
         infotype word = cursor->info;
@@ -166,7 +152,6 @@ bool deleteChar(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
 
         deleteNode(L, cursor, cursor);
 
-        // Bersihkan redoStack setelah aksi baru
         while (!isStackEmpty(redoStack)) {
             Action temp;
             pop(redoStack, temp);
@@ -176,13 +161,11 @@ bool deleteChar(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
     return false;
 }
 
-// Menambahkan karakter tanpa merekam aksi (untuk undo/redo)
 void insertCharWithoutRecord(List &L, address &cursor, infotype word) {
     address P = allocate(word);
     insertNode(L, cursor, P);
 }
 
-// Menghapus karakter tanpa merekam aksi (untuk undo/redo)
 bool deleteCharWithoutRecord(List &L, address &cursor, infotype word) {
     address P = findNode(L, word);
     if (P != nullptr) {
@@ -192,29 +175,24 @@ bool deleteCharWithoutRecord(List &L, address &cursor, infotype word) {
     return false;
 }
 
-// Fungsi Undo
 void undo(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
     if (!isStackEmpty(undoStack)) {
         Action act;
         pop(undoStack, act);
 
         if (act.type == "insert") {
-            // Undo insert dengan menghapus kata
             address P = findNode(L, act.word);
             if (P != nullptr) {
                 deleteCharWithoutRecord(L, cursor, act.word);
 
-                // Mencatat aksi untuk redo
                 Action redoAct;
                 redoAct.type = "insert";
                 redoAct.word = act.word;
                 push(redoStack, redoAct);
             }
         } else if (act.type == "delete") {
-            // Undo delete dengan menyisipkan kata kembali
             insertCharWithoutRecord(L, cursor, act.word);
 
-            // Mencatat aksi untuk redo
             Action redoAct;
             redoAct.type = "delete";
             redoAct.word = act.word;
@@ -226,26 +204,21 @@ void undo(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
     }
 }
 
-// Fungsi Redo
 void redo(List &L, address &cursor, Stack &undoStack, Stack &redoStack) {
     if (!isStackEmpty(redoStack)) {
         Action act;
         pop(redoStack, act);
 
         if (act.type == "insert") {
-            // Redo insert dengan menyisipkan kata
             insertCharWithoutRecord(L, cursor, act.word);
 
-            // Mencatat aksi untuk undo
             Action undoAct;
             undoAct.type = "insert";
             undoAct.word = act.word;
             push(undoStack, undoAct);
         } else if (act.type == "delete") {
-            // Redo delete dengan menghapus kata
             deleteCharWithoutRecord(L, cursor, act.word);
 
-            // Mencatat aksi untuk undo
             Action undoAct;
             undoAct.type = "delete";
             undoAct.word = act.word;
